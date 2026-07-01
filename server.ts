@@ -13,8 +13,22 @@ const PORT = 3000;
 
 app.use(express.json());
 
+const getFilePath = (filename: string) => {
+  if (process.env.VERCEL) {
+    const tmpPath = path.join("/tmp", filename);
+    if (!fs.existsSync(tmpPath)) {
+      const srcPath = path.join(process.cwd(), filename);
+      if (fs.existsSync(srcPath)) {
+        fs.copyFileSync(srcPath, tmpPath);
+      }
+    }
+    return tmpPath;
+  }
+  return path.join(process.cwd(), filename);
+};
+
 // In-Memory Fallback and Database File Definition
-const DATABASE_FILE = path.join(process.cwd(), "visitor_db.json");
+const DATABASE_FILE = getFilePath("visitor_db.json");
 
 interface VisitHistoryItem {
   timestamp: string;
@@ -158,11 +172,11 @@ if (!fs.existsSync(DATABASE_FILE)) {
 }
 
 // Enterprise Modules database files paths
-const EMPLOYEES_FILE = path.join(process.cwd(), "employees_db.json");
-const DEPARTMENTS_FILE = path.join(process.cwd(), "departments_db.json");
-const APPOINTMENTS_FILE = path.join(process.cwd(), "appointments_db.json");
-const AUDIT_LOGS_FILE = path.join(process.cwd(), "audit_logs_db.json");
-const SETTINGS_FILE = path.join(process.cwd(), "settings_db.json");
+const EMPLOYEES_FILE = getFilePath("employees_db.json");
+const DEPARTMENTS_FILE = getFilePath("departments_db.json");
+const APPOINTMENTS_FILE = getFilePath("appointments_db.json");
+const AUDIT_LOGS_FILE = getFilePath("audit_logs_db.json");
+const SETTINGS_FILE = getFilePath("settings_db.json");
 
 // Helper database readers/writers for enterprise modules
 function readEmployees(): any[] {
@@ -1156,4 +1170,8 @@ async function startServer() {
   });
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;
