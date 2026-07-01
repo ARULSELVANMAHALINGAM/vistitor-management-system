@@ -1,0 +1,6 @@
+{
+  "name": "Visitor Management System",
+  "description": "A high-fidelity, futuristic visitor hub with AI-powered risk assessment, custom badge designer, analytics, and interactive security kiosk.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
