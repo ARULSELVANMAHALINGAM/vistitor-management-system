@@ -28,7 +28,7 @@ export default function EmployeeWorkstation({
     }
   }, [employees]);
 
-  const activeEmployee = employeeList.find(e => e.id === activeEmployeeId);
+  const activeEmployee = employeeList.find(e => e.id === activeEmployeeId) || employeeList[0];
 
   const toggleAvailability = async () => {
     if (!activeEmployee) return;
@@ -58,7 +58,7 @@ export default function EmployeeWorkstation({
 
   // Filter appointments for the selected active employee host
   const filteredAppts = appointments.filter(
-    appt => appt.employeeId.toLowerCase() === activeEmployeeId.toLowerCase()
+    appt => appt.employeeId.toLowerCase() === (activeEmployee?.id || "").toLowerCase()
   );
 
   return (
@@ -77,15 +77,21 @@ export default function EmployeeWorkstation({
         <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3">
           <label className="block text-[10px] text-slate-500 font-mono uppercase tracking-wider font-semibold">Select Host Identity</label>
           <select
-            value={activeEmployeeId}
+            value={activeEmployeeId || (activeEmployee?.id || "")}
             onChange={(e) => setActiveEmployeeId(e.target.value)}
-            className="w-full bg-white text-slate-800 p-2.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-purple-600"
+            className="w-full bg-white text-slate-800 p-2.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-purple-600 cursor-pointer"
           >
-            {employeeList.map(emp => (
-              <option key={emp.id} value={emp.id}>
-                {emp.name} ({emp.department})
+            {employeeList.length === 0 ? (
+              <option value="" disabled className="bg-white text-slate-800">
+                No hosts available
               </option>
-            ))}
+            ) : (
+              employeeList.map(emp => (
+                <option key={emp.id} value={emp.id} className="bg-white text-slate-800">
+                  {emp.name} ({emp.department})
+                </option>
+              ))
+            )}
           </select>
 
           {activeEmployee && (
